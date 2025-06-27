@@ -12,3 +12,7 @@ jobs:
         env :
          GREETING : "friend"
         run : echo "Hello, ${GREETING}"
+      - name : Show repo info
+        run : |
+              echo "repo : ${{github.repository}}"
+              echo "branch : ${{github.branch}}"
