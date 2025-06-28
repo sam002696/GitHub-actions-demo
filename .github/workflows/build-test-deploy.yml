@@ -22,6 +22,12 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-build
+          path: build/
+
   test:
     runs-on: ubuntu-latest
     needs: build
@@ -44,5 +50,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: react-build
+          path: build/
+
       - name: Deploy
-        run: echo "Deploying"
+        run: |
+          echo "Deploying build folder..."
+          ls build/
