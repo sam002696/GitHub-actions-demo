@@ -7,12 +7,12 @@ jobs:
       - name: my-step
         run: echo "Hello World!"
       - name: Show date
-        run : date
-      - name : Greeting variable
-        env :
-         GREETING : "friend"
-        run : echo "Hello, ${GREETING}"
-      - name : Show repo info
-        run : |
-              echo "repo : ${{github.repository}}"
-              echo "branch : ${{github.ref}}"
+        run: date
+      - name: Greeting variable
+        env:
+          GREETING: "friend"
+        run: echo "Hello, ${GREETING}"
+      - name: Show repo info
+        run: |
+          echo "repo : ${{github.repository}}"
+          echo "branch : ${{github.ref}}"
