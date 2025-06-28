@@ -60,7 +60,12 @@ jobs:
           name: react-build
           path: dist/
 
-      - name: Deploy
+      - name: Install netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          echo "Deploying build folder..."
-          ls dist/
+          netlify deploy --dir=dist --prod --site=$NETLIFY_SITE_ID
