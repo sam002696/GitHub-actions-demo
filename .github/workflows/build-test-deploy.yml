@@ -22,14 +22,14 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Verify build output
-        run: ls -la build/
+      # - name: Verify dist output
+      #   run: ls -la dist/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: react-build
-          path: build/
+          path: dist/
           if-no-files-found: error
 
   test:
@@ -58,9 +58,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: react-build
-          path: build/
+          path: dist/
 
       - name: Deploy
         run: |
           echo "Deploying build folder..."
-          ls build/
+          ls dist/
