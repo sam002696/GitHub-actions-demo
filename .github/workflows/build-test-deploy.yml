@@ -1,5 +1,8 @@
 name: Build Test Deploy
 
+permissions:
+  pull-requests: write
+
 on:
   push:
     branches: [main]
