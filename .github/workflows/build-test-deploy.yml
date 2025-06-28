@@ -1,12 +1,18 @@
 name: Build Test Deploy
+
+permissions:
+  pull-requests: write
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,9 +28,6 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # - name: Verify dist output
-      #   run: ls -la dist/
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -35,6 +38,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
+    if: github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -50,9 +54,66 @@ jobs:
       - name: Run tests
         run: npm test
 
+  deploy-preview:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy preview to Netlify
+        id: deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+
+          ALIAS=preview-${{ github.head_ref }}
+          echo "alias=$ALIAS" >> $GITHUB_OUTPUT
+
+          DEPLOY_OUTPUT=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json || true)
+
+          echo "Deploy output:"
+          echo "$DEPLOY_OUTPUT"
+
+          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | jq -r '.deploy_url // empty')
+
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "⚠️ Failed to extract deploy_url from Netlify deploy output"
+            exit 1
+          fi
+
+          echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
+
+      - name: Comment preview URL on PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "🚀 Preview deployed: $DEPLOY_URL"
+
   deploy:
     runs-on: ubuntu-latest
     needs: [build, test]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://lustrous-sopapillas-17069b.netlify.app/
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -60,10 +121,10 @@ jobs:
           name: react-build
           path: dist/
 
-      - name: Install netlify CLI
+      - name: Install Netlify CLI
         run: npm install -g netlify-cli
 
-      - name: Deploy to netlify
+      - name: Deploy to Netlify (production)
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
