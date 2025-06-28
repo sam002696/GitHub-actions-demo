@@ -78,9 +78,23 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
+          sudo apt-get update && sudo apt-get install -y jq
+
           ALIAS=preview-${{ github.head_ref }}
           echo "alias=$ALIAS" >> $GITHUB_OUTPUT
-          DEPLOY_URL=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json | jq -r '.deploy_url')
+
+          DEPLOY_OUTPUT=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json || true)
+
+          echo "Deploy output:"
+          echo "$DEPLOY_OUTPUT"
+
+          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | jq -r '.deploy_url // empty')
+
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "⚠️ Failed to extract deploy_url from Netlify deploy output"
+            exit 1
+          fi
+
           echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_ENV
 
       - name: Comment preview URL on PR
