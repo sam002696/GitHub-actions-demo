@@ -1,12 +1,54 @@
-# React + Vite
+# Project Title
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Overview
 
-Currently, two official plugins are available:
+Brief description about the project...
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔧 Tech Stack
 
-## Expanding the ESLint configuration
+- React
+- Vite
+- GitHub Actions
+- Netlify
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📦 CI/CD
+
+This project uses GitHub Actions for a complete CI/CD pipeline that automates:
+
+### 🔨 1. Build
+
+- Runs automatically on every push to the `main` branch.
+- Installs dependencies and builds the React + Vite app.
+- Artifacts are generated and stored for later steps.
+
+### ✅ 2. Test
+
+- Executes unit/integration tests right after the build.
+- Ensures no broken code gets deployed to production.
+
+### 🚀 3. Deploy (Preview)
+
+- On every pull request, a preview deploy is created on **Netlify**.
+- A unique preview URL is generated and commented on the PR.
+- This allows reviewers to test the app live before merging.
+
+### 🌐 4. Deploy (Production)
+
+- After merging to `main`, production deploy happens automatically to Netlify.
+- The deployed site URL is: [Production Site](https://your-netlify-url.netlify.app)
+
+### 🏷️ 5. Release
+
+- Once production deployment is complete, a new **GitHub Release** is created.
+- The release is tagged with a timestamp (`vYYYY.MM.DD-HHMMSS`) for traceability.
+- This makes it easy to rollback or track features by release.
+
+> All steps are fully automated via GitHub Actions and follow a `build → test → preview deploy → production deploy → release` flow.
+
+## 📡 Live URL
+
+[Production Site](https://your-netlify-url.netlify.app)
+
+## 📜 License
+
+[MIT](LICENSE)
