@@ -67,6 +67,9 @@ jobs:
           name: react-build
           path: dist/
 
+      - name: List contents of dist folder
+        run: ls -la dist
+
       - name: Install Netlify CLI
         run: npm install -g netlify-cli
 
