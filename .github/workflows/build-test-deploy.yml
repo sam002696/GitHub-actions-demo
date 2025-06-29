@@ -81,7 +81,7 @@ jobs:
           ALIAS=preview-${{ github.head_ref }}
           echo "alias=$ALIAS" >> $GITHUB_OUTPUT
 
-          DEPLOY_OUTPUT=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json || true)
+          DEPLOY_OUTPUT=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json)
 
           echo "Deploy output:"
           echo "$DEPLOY_OUTPUT"
@@ -100,7 +100,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr comment ${{ github.event.pull_request.number }} \
-            --body "🚀 Preview deployed: $DEPLOY_URL"
+            --body "Preview deployed: $DEPLOY_URL"
 
   deploy:
     runs-on: ubuntu-latest
