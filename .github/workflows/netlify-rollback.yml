@@ -1,0 +1,23 @@
+name: Manual Netlify Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_id:
+        description: "Netlify Deploy ID to roll back to"
+        required: true
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Roll back to Netlify Deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          echo "Rolling back to deploy ID: ${{ github.event.inputs.deploy_id }}"
+          netlify deploy --prod --deploy-id=${{ github.event.inputs.deploy_id }} --site=$NETLIFY_SITE_ID
