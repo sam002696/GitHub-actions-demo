@@ -84,7 +84,7 @@ jobs:
           ALIAS=preview-${{ github.head_ref }}
           echo "alias=$ALIAS" >> $GITHUB_OUTPUT
 
-          DEPLOY_OUTPUT=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json)
+          DEPLOY_OUTPUT=$(netlify deploy --site=$NETLIFY_SITE_ID --dir=dist --alias=$ALIAS --json --no-build)
 
           echo "Deploy output:"
           echo "$DEPLOY_OUTPUT"
